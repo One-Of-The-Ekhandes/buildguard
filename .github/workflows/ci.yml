@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: ./build.sh
+      - run: ./test.sh
+      - name: Test fails clearly when the binary is missing
+        run: |
+          rm -rf build
+          if ./test.sh; then echo "expected failure"; exit 1; fi
